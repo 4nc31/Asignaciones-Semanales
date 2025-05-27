@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Asignaciones Semanales</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 20px;
+      background-color: #f4f6f9;
+      color: #333;
+    }
+    h1, h2, h3 {
+      font-family: 'Georgia', serif;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      background-color: #fff;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: center;
+    }
+    th {
+      background-color: #f0f0f0;
+      font-weight: 600;
+    }
+    td[contenteditable] {
+      background-color: #fcfcfc;
+    }
+    th:nth-child(1), td:nth-child(1) { background-color: #f8f9fa; }
+    th:nth-child(2), td:nth-child(2) { background-color: #fff3cd; }
+    th:nth-child(3), td:nth-child(3) { background-color: #fff3cd; }
+    th:nth-child(4), td:nth-child(4) { background-color: #d1ecf1; }
+    th:nth-child(5), td:nth-child(5) { background-color: #c3e6cb; }
+    th:nth-child(6), td:nth-child(6) { background-color: #d4edda; }
+    th:nth-child(7), td:nth-child(7) { background-color: #f8d7da; }
+    th:nth-child(8), td:nth-child(8) { background-color: #f8d7da; }
+    button {
+      margin: 10px 5px;
+      padding: 10px 15px;
+      border: none;
+      background-color: #4CAF50;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+    button:hover {
+      background-color: #45a049;
+      transform: scale(1.03);
+    }
+    button:active {
+      transform: scale(0.98);
+    }
+    #toggleBtn {
+      background-color: #2196F3;
+      margin: 10px 5px;
+    }
+    #toggleBtn:hover {
+      background-color: #1976D2;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    input, select {
+      padding: 6px;
+      margin: 5px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+    #nombresTab {
+  display: none;
+  margin-top: 20px;
+  background-color: #fff;
+  padding: 15px;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  font-size: 15px;
+  line-height: 1.6;
+  color: #444;
+}
+#nombresTab strong {
+  display: block;
+  margin-top: 10px;
+  font-size: 16px;
+  color: #222;
+}
+#nombresTab span {
+  display: inline-block;
+  background-color: #eef;
+  padding: 4px 8px;
+  margin: 2px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+#nombresTab button {
+  margin-left: 5px;
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  padding: 2px 6px;
+  font-size: 12px;
+}
+#nombresTab button:hover {
+  background-color: #c0392b;
+}
+    .rol-lista {
+      margin-bottom: 10px;
+    }
+    .card {
+      background: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 20px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+    .btn-group button {
+      margin-right: 5px;
+    }
+      @media (max-width: 768px) {
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+      thead tr {
+        display: none;
+      }
+      tr {
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        padding: 10px;
+        background-color: #fff;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+      }
+      td {
+        text-align: left;
+        position: relative;
+        padding-left: 50%;
+        border: none;
+        border-bottom: 1px solid #eee;
+      }
+      td::before {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        width: 45%;
+        padding-right: 10px;
+        white-space: nowrap;
+        font-weight: bold;
+        content: attr(data-label);
+      }
+    }
+      @media (max-width: 600px) {
+      .card input,
+      .card label,
+      .card button,
+      .card p {
+        width: 100%;
+        display: block;
+        box-sizing: border-box;
+      }
+      .card div {
+        display: flex;
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body onload="cargarLocal()">
+  <h1 style="font-size: 18px; margin-bottom: 5px;">Asignaciones Semanales</h1>
+  <p style="margin-top: 0; font-size: 16px; color: #555;">Congregación Barahona</p>
+
+  <label for="fecha">Selecciona la semana:</label>
+  <input type="date" id="fecha">
+  <button onclick="generarAsignaciones()">Asignar Aleatoriamente</button>
+  <button onclick="descargarPDF()">Generar PDF</button>
+  <button id="toggleBtn" onclick="toggleNombres()">Mostrar/Ocultar Nombres</button>
+
+  <div id="contenedorPDF">
+    <div style="text-align: center; margin-bottom: 10px;">
+      <h2 style="margin: 5px 0 2px 0; font-size: 16px;">Asignaciones Semanales</h2>
+      <p style="margin: 0; font-size: 14px; color: #555;">Congregación Barahona</p>
+      <hr style="margin: 8px auto; width: 50%; border: 0; height: 1px; background-color: #ccc;">
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Presidente</th>
+          <th>Lector</th>
+          <th>Video/Sonido</th>
+          <th>Acom. Zoom</th>
+          <th>Micrófonos</th>
+          <th>Acom. Entrada</th>
+          <th>Acom. Auditorio</th>
+        </tr>
+      </thead>
+      <tbody id="cuerpoTabla"></tbody>
+    </table>
+  </div>
+
+  <script>
+    let datos;
+    function valoresIniciales() {
+      return {
+        video: ["Andres Marrero", "Jandiel Alvarado", "Giancarlos Torres", "Manuel Barreto", "Kedin Martinez", "Misael Marrero", "Juan Vega", "Alberto Marrero", "Luis Lopez", "William Torrales", "Israel Quinones", "Ancel Albaladejo", "Ismael Hernandez", "Felix D. Hernandez"],
+        zoom: ["Andres Marrero", "Jandiel Alvarado", "Giancarlos Torres", "Manuel Barreto", "Kedin Martinez", "Misael Marrero", "Juan Vega", "Alberto Marrero", "Luis Lopez", "William Torrales", "Israel Quinones", "Ancel Albaladejo", "Ismael Hernandez", "Felix D. Hernandez"],
+        microfonos: ["Andres Marrero", "Jandiel Alvarado", "Giancarlos Torres", "Manuel Barreto", "Kedin Martinez", "Misael Marrero", "Juan Vega", "Alberto Marrero", "Luis Lopez", "Israel Quinones", "Ancel Albaladejo", "Ismael Hernandez", "Arnaldo Laureano", "Ricardo Mercado", "Jose Nazario", "Omar Santiago", "Carlos Otero", "Wilfrido Oyola", "Rafael Perez"],
+        acomodador: ["Andres Marrero", "Jandiel Alvarado", "Giancarlos Torres", "Manuel Barreto", "Kedin Martinez", "Misael Marrero", "Juan Vega", "Alberto Marrero", "Luis Lopez", "Israel Quinones", "Ancel Albaladejo", "Ismael Hernandez", "Arnaldo Laureano", "Ricardo Mercado", "Jose Nazario", "Omar Santiago", "Carlos Otero", "Wilfrido Oyola", "Rafael Perez", "Ralph Crespo", "Luis Zayas", "Rafael Rolon", "Anselmo Albaladejo", "Rey Ortiz", "Jose Maldonado"]
+      };
+    }
+    function cargarLocal() {
+      const guardado = localStorage.getItem("asignacionesNombres");
+      datos = guardado ? JSON.parse(guardado) : valoresIniciales();
+    }
+    function esDomingo(fechaStr) {
+      const date = new Date(fechaStr);
+      return date.getDay() === 0;
+    }
+    function generarAsignaciones() {
+      if (!datos) datos = valoresIniciales();
+      const fechaInput = document.getElementById("fecha").value;
+      if (!fechaInput) return alert("Selecciona una fecha primero");
+      const date = new Date(fechaInput);
+      const options = { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' };
+      const partes = date.toLocaleDateString("es-ES", options).split(" ");
+      const dia = partes[1].replace(",", "");
+      const mes = partes[2].charAt(0).toUpperCase() + partes[2].slice(1);
+      const anio = partes[3];
+      const fecha = `${mes}-${dia}-${anio}`;
+      const fila = document.createElement("tr");
+      const presidente = esDomingo(fechaInput) ? "" : "-";
+      const lector = esDomingo(fechaInput) ? "" : "-";
+
+      const usados = new Set();
+      const filas = Array.from(document.querySelectorAll("#cuerpoTabla tr"));
+      const ultFila = filas.length > 0 ? filas[filas.length - 1] : null;
+      const ultAsignaciones = {};
+
+      if (ultFila) {
+        const celdas = ultFila.querySelectorAll("td");
+        ultAsignaciones.video = celdas[3].textContent.split(" y ").map(n => n.trim());
+        ultAsignaciones.zoom = celdas[4].textContent.split(" y ").map(n => n.trim());
+        ultAsignaciones.microfonos = celdas[5].textContent.split(" y ").map(n => n.trim());
+        ultAsignaciones.acomodador = [celdas[6].textContent.trim(), celdas[7].textContent.trim()];
+      }
+
+      function obtenerSinRepetir(rol, cantidad) {
+        const anteriores = ultAsignaciones[rol] || [];
+        const disponibles = datos[rol].filter(n => !usados.has(n) && !anteriores.includes(n));
+        const copia = [...disponibles];
+        const resultado = [];
+        while (resultado.length < cantidad && copia.length > 0) {
+          const idx = Math.floor(Math.random() * copia.length);
+          const elegido = copia.splice(idx, 1)[0];
+          resultado.push(elegido);
+          usados.add(elegido);
+        }
+        if (resultado.length < cantidad) {
+          const relleno = datos[rol].filter(n => !usados.has(n));
+          while (resultado.length < cantidad && relleno.length > 0) {
+            resultado.push(relleno.shift());
+          }
+        }
+        return resultado;
+      }
+
+      const video = obtenerSinRepetir("video", 2);
+      const zoom = obtenerSinRepetir("zoom", 1);
+      const microfonos = obtenerSinRepetir("microfonos", 2);
+      const acomodadores = obtenerSinRepetir("acomodador", 2);
+
+      fila.innerHTML = `
+        <td contenteditable="true" data-label="Fecha">${fecha}</td>
+        <td contenteditable="true" data-label="Presidente">${presidente}</td>
+        <td contenteditable="true" data-label="Lector">${lector}</td>
+        <td contenteditable="true" data-label="Video/Sonido">${video.join(' y ')}</td>
+        <td contenteditable="true" data-label="Acom. Zoom">${zoom.join(' y ')}</td>
+        <td contenteditable="true" data-label="Micrófonos">${microfonos.join(' y ')}</td>
+        <td contenteditable="true" data-label="Acom. Entrada">${acomodadores[0]}</td>
+        <td contenteditable="true" data-label="Acom. Auditorio">${acomodadores[1]}</td>
+      `;
+      document.getElementById("cuerpoTabla").appendChild(fila);
+    }
+    function descargarPDF() {
+      const { jsPDF } = window.jspdf;
+      html2canvas(document.getElementById("contenedorPDF"), { scale: 2 }).then(canvas => {
+        const imgData = canvas.toDataURL("image/png");
+        const pdf = new jsPDF("p", "mm", "letter");
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+        pdf.addImage(imgData, "PNG", 10, 10, pdfWidth - 20, pdfHeight);
+        pdf.save("Asignaciones.pdf");
+      });
+    }
+  function toggleNombres() {
+  const tab = document.getElementById("nombresTab");
+  tab.style.display = tab.style.display === "none" ? "block" : "none";
+  if (tab.style.display === "block") mostrarNombres();
+}
+
+function mostrarNombres() {
+  const contenedor = document.getElementById("listaNombres");
+  contenedor.innerHTML = "";
+  Object.keys(datos).forEach(rol => {
+    const div = document.createElement("div");
+    div.className = "rol-lista";
+    div.innerHTML = `<strong>${rol.toUpperCase()}:</strong><br>` + datos[rol].map((n, i) => `<span>${n} <button onclick='eliminarNombre("${rol}", ${i})'>❌</button></span>`).join(", ");
+    contenedor.appendChild(div);
+  });
+}
+
+function eliminarNombre(rol, idx) {
+  datos[rol].splice(idx, 1);
+  localStorage.setItem("asignacionesNombres", JSON.stringify(datos));
+  mostrarNombres();
+}
+</script>
+
+<div class="card">
+  <h2>Agregar nuevo nombre</h2>
+  <input type="text" id="nuevoNombre" placeholder="Nombre">
+  <div>
+    <label><input type="checkbox" value="video" class="rolCheck"> Video/Sonido</label>
+    <label><input type="checkbox" value="zoom" class="rolCheck"> Acomodador Zoom</label>
+    <label><input type="checkbox" value="microfonos" class="rolCheck"> Micrófonos</label>
+    <label><input type="checkbox" value="acomodador" class="rolCheck"> Acomodadores Entrada/Auditorio</label>
+  </div>
+  <button onclick="agregarNombre()">Agregar</button>
+  <p id="statusMsgAgregar" style="color: green; font-size: 14px;"></p>
+</div>
+
+<script>
+function agregarNombre() {
+  const nombre = document.getElementById("nuevoNombre").value.trim();
+  const checks = document.querySelectorAll(".rolCheck:checked");
+  const msg = document.getElementById("statusMsgAgregar");
+  msg.textContent = "";
+  if (!nombre) {
+    msg.textContent = "Debes escribir un nombre.";
+    return;
+  }
+  if (checks.length === 0) {
+    msg.textContent = "Selecciona al menos un rol.";
+    return;
+  }
+  checks.forEach(chk => {
+    if (!datos[chk.value].includes(nombre)) datos[chk.value].push(nombre);
+  });
+  localStorage.setItem("asignacionesNombres", JSON.stringify(datos));
+  msg.textContent = `Nombre '${nombre}' agregado.`;
+  document.getElementById("nuevoNombre").value = "";
+  document.querySelectorAll(".rolCheck").forEach(el => el.checked = false);
+}
+</script>
+
+<div id="nombresTab">
+  <h3>Lista de Nombres por Asignación</h3>
+  <div id="listaNombres"></div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</body>
+</html>
